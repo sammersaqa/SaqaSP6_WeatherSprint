@@ -10,7 +10,7 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
-    background-image: url("/assets/WeatherSpring_HeroPageBG.png");
+    background-image: url("/assets/MainBG.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     /* Added position: relative for correct z-index stacking */
@@ -82,11 +82,11 @@ body.index-page::before {
 .weather-card {
     background-image: url("/assets/Cloudy\ overcast.png");
     background-size: cover;
-    border: 25px solid #4ade80;
     border-radius: 30px;
     padding: 60px 80px;
     width: 100%;
-    min-height: 500px; /* Set min-height instead of fixed height */
+    height: 600px;
+    opacity: 50%;
     
     /* REMOVED: margin-right: 32rem; */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -136,7 +136,7 @@ body.index-page::before {
     width: 350px; /* MODIFIED: Reduced from 400px for a better fit */
     display: flex;
     flex-direction: column;
-    margin-left: 200px;
+    margin-left: 400px;
     gap: 30px;
     /* REMOVED: margin-top: 9rem; We use the parent align-items: flex-start instead */
 }
