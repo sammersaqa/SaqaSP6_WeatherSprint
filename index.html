@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherDesk</title>
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body class="index-page">
+    <div class="main-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>WeatherDesk.com</h1>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            <!-- Left Side - Current Weather -->
+            <div class="current-weather-panel" id="currentWeatherPanel">
+                <div class="weather-card">
+                    <div class="location-display location" id="locationDisplay">
+                        Stockton, CA, US
+                    </div>
+                    <section class="weather-info weather" id="weatherInfo">
+                        <div class="condition">Cloudy/Overcast</div>
+                        <div class="temp-display">46°/42°</div>
+                        <div class="humidity">Humidity 88%</div>
+                        <div class="wind">Wind 1 mph S/E</div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Right Side - Popular Locations & Search -->
+            <div class="sidebar-panel">
+                <div class="popular-locations">
+                    <h2>Popular Locations</h2>
+                    <div class="locations-list" id="locationsList">
+                        <div class="location-item" data-city="Stockton">Stockton</div>
+                        <div class="location-item" data-city="San Francisco">San Francisco</div>
+                        <div class="location-item" data-city="New York">New York</div>
+                        <div class="location-item" data-city="Chicago">Chicago</div>
+                        <div class="location-item" data-city="Los Angeles">Los Angeles</div>
+                    </div>
+                </div>
+
+                <div class="search-controls">
+                    <input type="text" class="search-input" id="cityInput" placeholder="Search Here">
+                    <button class="forecast-btn" id="forecastBtn">5 Day Forecast</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forecast Section (Hidden initially, shown when button clicked) -->
+        <div class="forecast-section" id="forecastSection" style="display: none;">
+            <button class="back-btn" id="backBtn">← Back</button>
+            <h2 class="forecast-title">5 Day Forecast</h2>
+            <div class="forecast-grid" id="forecastGrid"></div>
+        </div>
+
+        <div id="errorMessage"></div>
+    </div>
+
+    <script src="./apps/storage.js"></script>
+    <script src="./apps/apps.js"></script>
+</body>
+</html>
