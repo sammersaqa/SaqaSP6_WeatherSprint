@@ -8,69 +8,67 @@
 </head>
 <body class="index-page">
     <div class="main-container">
-        <!-- Header -->
         <header class="header">
             <h1>WeatherDesk.com</h1>
         </header>
 
-        <!-- Main Content Area -->
         <div class="content-wrapper">
-            <!-- Left Side - Current Weather -->
             <div class="current-weather-panel" id="currentWeatherPanel">
-                <div class="weather-card">
-                    <div class="location-display location" id="locationDisplay">
-                        Stockton, CA, US
+                <a href="./pages/stockton5day.html" 
+                   id="currentWeatherLink" 
+                   data-city="Stockton" 
+                   class="weather-card-link">
+                    
+                    <div class="weather-card" id="weatherCard">
+                        <div class="location-display location" id="locationDisplay">
+                            Stockton, CA, US
+                        </div>
+                        <section class="weather-info weather" id="weatherInfo">
+                            <div class="condition">Cloudy/Overcast</div>
+                            <div class="temp-display">46°/42°</div>
+                            <div class="humidity">Humidity 88%</div>
+                            <div class="wind">Wind 1 mph S/E</div>
+                        </section>
                     </div>
-                    <section class="weather-info weather" id="weatherInfo">
-                        <div class="condition">Cloudy/Overcast</div>
-                        <div class="temp-display">46°/42°</div>
-                        <div class="humidity">Humidity 88%</div>
-                        <div class="wind">Wind 1 mph S/E</div>
-                    </section>
-                </div>
-            </div>
 
-            <!-- Right Side - Popular Locations & Search -->
+                </a> 
+            </div>
+            
             <div class="sidebar-panel">
+                <br>
                 <div class="popular-locations">
                     <h2>Popular Locations</h2>
                     <div class="locations-list" id="locationsList">
-    <a href="./pages/Stockton5day.html" class="location-item" data-city="Stockton">
-        <div class="location-name">Stockton</div>
-    </a>
-    <a href="#" class="location-item" data-city="San Francisco">
-        <div class="location-name">San Francisco</div>
-    </a>
-    <a href="#" class="location-item" data-city="New York">
-        <div class="location-name">New York</div>
-    </a>
-    <a href="#" class="location-item" data-city="Chicago">
-        <div class="location-name">Chicago</div>
-    </a>
-    <a href="#" class="location-item" data-city="Los Angeles">
-        <div class="location-name">Los Angeles</div>
-    </a>
-</div>
+                        <a href="./index.html" class="location-item" data-city="Stockton">
+                            <div class="location-name">Stockton</div>
+                        </a>
+                        <a href="./pages/SFCurrent.html" class="location-item" data-city="San Francisco">
+                            <div class="location-name">San Francisco</div>
+                        </a>
+                        <a href="./pages/NYCurrent.html" class="location-item" data-city="New York">
+                            <div class="location-name">New York</div>
+                        </a>
+                        <a href="./pages/ChicagoCurrent.html" class="location-item" data-city="Chicago">
+                            <div class="location-name">Chicago</div>
+                        </a>
+                        <a href="./pages/LACurrent.html" class="location-item" data-city="Los Angeles">
+                            <div class="location-name">Los Angeles</div>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="search-controls">
-                    <input type="text" class="search-input" id="cityInput" placeholder="Search Here">
-                    <button class="forecast-btn" id="forecastBtn">5 Day Forecast</button>
-                </div>
+
+            <div class="forecast-section" id="forecastSection" style="display: none;">
+                <button class="back-btn" id="backBtn">← Back</button>
+                <h2 class="forecast-title">5 Day Forecast</h2>
+                <div class="forecast-grid" id="forecastGrid"></div>
             </div>
+
+            <div id="errorMessage"></div>
         </div>
 
-        <!-- Forecast Section (Hidden initially, shown when button clicked) -->
-        <div class="forecast-section" id="forecastSection" style="display: none;">
-            <button class="back-btn" id="backBtn">← Back</button>
-            <h2 class="forecast-title">5 Day Forecast</h2>
-            <div class="forecast-grid" id="forecastGrid"></div>
-        </div>
-
-        <div id="errorMessage"></div>
+        <script src="./apps/storage.js"></script>
+        <script src="./apps/apps.js"></script>
     </div>
-
-    <script src="./apps/storage.js"></script>
-    <script src="./apps/apps.js"></script>
 </body>
 </html>
