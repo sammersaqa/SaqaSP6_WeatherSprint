@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Day Forecast - Stockton, CA</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body class="forecast-page">
+    <div class="forecast-container">
+
+        <header class="forecast-header">
+            <h1 class="site-title">WeatherDesk.com</h1>
+            <div class="header-right">
+                <input type="text" placeholder="Search for a City" class="search-input" id="forecastSearchInput">
+                <button class="forecast-btn" id="returnToIndexBtn">Return to Index</button>
+                <a href="../index.html" class="location-item" data-city="Stockton"></a>
+                <a href="../index.html" class="location-item" data-city="Stockton"></a>
+                <a href="../index.html" class="location-item" data-city="Stockton"></a>
+                <a href="../index.html" class="location-item" data-city="Stockton"></a>
+                <a href="../index.html" class="location-item" data-city="Stockton"></a>
+            </div>
+        </header>
+
+        <section class="forecast-main">
+            <h2 class="forecast-title" id="forecastMainTitle">Stockton, CA 5 day forecast</h2>
+
+            <div class="forecast-cards" id="dynamicForecastCards">
+
+                <div class="forecast-card" data-day="Mon">
+                    <div class="card-icon-section">
+                        <i class="fas fa-cloud fa-5x" style="color:#6b7280;"></i>
+                    </div>
+                    <div class="card-info-section">
+                        <div class="day-label">
+                            <span class="calendar-icon">📅</span>
+                            <span class="forecast-day-label">Mon</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-icon">☁️</span>
+                            <span class="forecast-desc">Overcast</span>
+                        </div>
+                        <div class="temp-row">
+                            <span class="temp-icon">🌡️</span>
+                            <span class="forecast-temp">70° / 47°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="forecast-card" data-day="Tue">
+                    <div class="card-icon-section">
+                        <i class="fas fa-sun fa-5x" style="color:orange;"></i>
+                    </div>
+                    <div class="card-info-section">
+                        <div class="day-label">
+                            <span class="calendar-icon">📅</span>
+                            <span class="forecast-day-label">Tue</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-icon">☀️</span>
+                            <span class="forecast-desc">Clear</span>
+                        </div>
+                        <div class="temp-row">
+                            <span class="temp-icon">🌡️</span>
+                            <span class="forecast-temp">76° / 54°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="forecast-card" data-day="Wed">
+                    <div class="card-icon-section">
+                        <i class="fas fa-cloud-sun fa-5x" style="color:rgb(247, 215, 114);"></i>
+                    </div>
+                    <div class="card-info-section">
+                        <div class="day-label">
+                            <span class="calendar-icon">📅</span>
+                            <span class="forecast-day-label">Wed</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-icon">⛅</span>
+                            <span class="forecast-desc">Partly Cloudy</span>
+                        </div>
+                        <div class="temp-row">
+                            <span class="temp-icon">🌡️</span>
+                            <span class="forecast-temp">72° / 60°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="forecast-card" data-day="Thu">
+                    <div class="card-icon-section">
+                        <i class="fas fa-cloud-bolt fa-5x" style="color:rgb(255, 230, 0);"></i>
+                    </div>
+                    <div class="card-info-section">
+                        <div class="day-label">
+                            <span class="calendar-icon">📅</span>
+                            <span class="forecast-day-label">Thu</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-icon">⛈️</span>
+                            <span class="forecast-desc">Lightning</span>
+                        </div>
+                        <div class="temp-row">
+                            <span class="temp-icon">🌡️</span>
+                            <span class="forecast-temp">73° / 50°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="forecast-card" data-day="Fri">
+                    <div class="card-icon-section">
+                        <i class="fas fa-cloud-showers-heavy fa-5x" style="color:rgb(109, 137, 187);"></i>
+                    </div>
+                    <div class="card-info-section">
+                        <div class="day-label">
+                            <span class="calendar-icon">📅</span>
+                            <span class="forecast-day-label">Fri</span>
+                        </div>
+                        <div class="condition-row">
+                            <span class="condition-icon">🌧️</span>
+                            <span class="forecast-desc">Rain</span>
+                        </div>
+                        <div class="temp-row">
+                            <span class="temp-icon">🌡️</span>
+                            <span class="forecast-temp">75° / 48°</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="favorites-section">
+            <h3 class="favorites-title">Favorites</h3>
+            <div class="locations-list" id="locationsList">
+                <a href="../index.html" class="location-item" data-city="Stockton">
+                    <div class="location-name">Stockton</div>
+                </a>
+
+            </div>
+
+            <div class="pagination">
+                <button class="page-btn" id="prevBtn" disabled>&#8592;</button>
+                <span class="page-indicator" id="pageIndicator">1 / 1</span>
+                <button class="page-btn" id="nextBtn" disabled>&#8594;</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="../apps/storage.js"></script>
+    <script src="../apps/apps.js"></script>
+</body>
+
+</html>
