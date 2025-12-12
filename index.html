@@ -1,90 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<<<<<<< HEAD
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeatherDesk</title>
-    <link rel="stylesheet" href="./styles/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>WeatherDesk.com</title>
+    
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" 
+    />
+
+    <link rel="stylesheet" href="./styles/styles.css"> 
 </head>
 <body class="index-page">
     <div class="main-container">
+
         <header class="header">
             <h1>WeatherDesk.com</h1>
+            
             <div class="search-bar">
-                <input type="text" id="headerCityInput" placeholder="Search city..." class="search-input">
-                <button id="headerSearchBtn" class="search-btn">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search for a city..."
+                >
+                <button id="searchBtn" class="search-btn">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
         </header>
 
-        <div class="content-wrapper">
-            <div class="current-weather-panel" id="currentWeatherPanel">
-                <a href="./pages/stockton5day.html" 
-                    id="currentWeatherLink" 
-                    data-city="Stockton" 
-                    class="weather-card-link">
-                    
-                    <div class="weather-card" id="weatherCard">
-                        <div class="location-display location" id="locationDisplay">
-                            Stockton, CA, US
-                        </div>
-                        <section class="weather-info weather" id="weatherInfo">
-                            <div class="condition">Cloudy/Overcast</div>
-                            <div class="temp-display">46°/42°</div>
-                            <div class="humidity">Humidity 88%</div>
-                            <div class="wind">Wind 1 mph S/E</div>
-                        </section>
-                    </div>
+        <main class="content-wrapper">
 
-                </a> 
+            <div class="current-weather-panel" id="currentWeatherPanel">
+                <a href="./pages/stockton5day.html" id="currentWeatherLink" class="weather-card-link" data-city="Stockton">
+                    <div class="weather-card" id="weatherCard">
+                        <div class="location-display" id="locationDisplay">Stockton, CA, US</div>
+                        <div class="weather-info" id="weatherInfo">
+                            </div>
+                        <button id="forecastBtn" class="index-forecast-btn">5-Day Forecast</button>
+                    </div>
+                </a>
             </div>
-            
-            <div class="sidebar-panel">
-                <br><br>
+
+            <div class="sidebar-panel" id="sidebarPanel">
                 <div class="popular-locations">
                     <h2>Popular Locations</h2>
                     <div class="locations-list" id="locationsList">
-                        <a href="./index.html" class="location-item" data-city="Stockton"><div class="location-name">Stockton</div></a>
-                        <a href="./pages/SFCurrent.html" class="location-item" data-city="San Francisco"><div class="location-name">San Francisco</div></a>
-                        <a href="./pages/NYCurrent.html" class="location-item" data-city="New York"><div class="location-name">New York</div></a>
-                        <a href="./pages/ChicagoCurrent.html" class="location-item" data-city="Chicago"><div class="location-name">Chicago</div></a>
-                        <a href="./pages/LACurrent.html" class="location-item" data-city="Los Angeles"><div class="location-name">Los Angeles</div></a>
-                    </div>
+                        </div>
                 </div>
-
-
-            <div class="forecast-section" id="forecastSection" style="display: none;">
-                <button class="back-btn" id="backBtn">← Back</button>
-                <h2 class="forecast-title">5 Day Forecast</h2>
-                <div class="forecast-grid" id="forecastGrid"></div>
             </div>
+        </main>
+        
+        <section class="forecast-section" id="forecastSection" style="display: none;">
+            <button id="backBtn" class="back-btn">← Back to Current</button>
+            <h2 class="forecast-title" id="forecastTitle">5-Day Forecast</h2>
+            <div class="forecast-grid" id="forecastGrid">
+                </div>
+        </section>
 
-            <div id="errorMessage"></div>
-        </div>
+        <div id="errorMessage" class="error" style="display:none;"></div>
 
-        <script src="./apps/storage.js"></script> 
-        <script src="./apps/apps.js"></script>
-        <script src="https://kit.fontawesome.com/74f23b23e8.js" crossorigin="anonymous"></script>
-=======
-  <title>5-Day Forecast</title>
-  <link rel="stylesheet" href="../styles/styles.css">
-</head>
-<body>
-  <div class="background-overlay">
-    <div class="forecast-container">
-      <h1 id="forecast-title">5-Day Forecast</h1>
-
-      <div id="forecast-cards">
-     
-      </div>
-
->>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
     </div>
-  </div>
-
-  <script src="../apps/apps.js"></script>
+    
+    <script src="./apps/apps.js"></script>
 </body>
 </html>
