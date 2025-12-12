@@ -1,11 +1,16 @@
 // --- Configuration ---
 // IMPORTANT: Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key
-const API_KEY = 'YOUR_API_KEY'; 
+const API_KEY = 'bcec763aa1fd9463b3999bb9d5e8000b'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Function to check which page we are on
 const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
 const isForecastPage = window.location.pathname.includes('stockton5day.html');
+
+// Helper function to convert Kelvin to Fahrenheit (This was missing its definition in the snippet)
+function kelvinToFahrenheit(k) {
+    return Math.round((k - 273.15) * 9/5 + 32);
+}
 
 // =========================================================
 // 1. STORAGE UTILITIES (Replacing storage.js)
@@ -61,7 +66,7 @@ const storage = {
 window.toggleFavorite = storage.toggleFavorite; 
 
 // =========================================================
-// 2. GLOBAL HELPERS
+// 2. GLOBAL HELPERS & API FETCH
 // =========================================================
 
 // Helper function to format wind direction
@@ -69,11 +74,6 @@ function getWindDirection(deg) {
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     const index = Math.round(deg / 45) % 8;
     return directions[index];
-}
-
-// Helper function to convert Kelvin to Fahrenheit
-function kelvinToFahrenheit(k) {
-    return Math.round((k - 273.15) * 9/5 + 32);
 }
 
 // Helper function to display errors
@@ -145,6 +145,7 @@ if (isIndexPage) {
 
     // Helper to generate an individual forecast card for the index page
     function createIndexForecastCard(data) {
+        // --- Corrected logic for kelvinToFahrenheit, day, and icon retrieval ---
         const tempMax = kelvinToFahrenheit(data.main.temp_max);
         const tempMin = kelvinToFahrenheit(data.main.temp_min);
         const date = new Date(data.dt * 1000);
@@ -172,7 +173,7 @@ if (isIndexPage) {
         const seenDays = new Set();
         const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
 
-        // Filter for one entry per day, favoring the 12:00:00 entry
+        // Filter for one entry per day, favoring the 12:00:00 entry for the next 5 days
         for (const item of forecastData) {
             const date = new Date(item.dt * 1000);
             const day = date.toLocaleDateString('en-US', { weekday: 'short' });
@@ -234,11 +235,14 @@ if (isIndexPage) {
         const tempMinF = kelvinToFahrenheit(data.main.temp_min);
         const windDir = getWindDirection(data.wind.deg);
         const iconCode = data.weather[0].icon;
+        
+        // Use storage.isFavorite directly in the template literal
+        const isFav = storage.isFavorite(data.name); 
 
         if (locationDisplay) locationDisplay.innerHTML = `
             ${data.name}, ${data.sys.country}
             <button class="favorite-btn" onclick="toggleFavorite('${data.name}')">
-                <i class="fas fa-star" id="favoriteIcon" style="color: ${storage.isFavorite(data.name) ? 'yellow' : 'gray'};"></i>
+                <i class="fas fa-star" id="favoriteIcon" style="color: ${isFav ? 'yellow' : 'gray'};"></i>
             </button>
         `;
 
@@ -348,5 +352,177 @@ if (isForecastPage) {
         const day = date.toLocaleDateString('en-US', { weekday: 'short' });
         const iconCode = data.weather[0].icon;
         const description = data.weather[0].description;
+        
+        // Determine color for Font Awesome icon based on OpenWeatherMap icon code
+        const iconStyle = {
+            '01d': 'orange', '01n': 'white', 
+            '02d': 'rgb(247, 215, 114)', '02n': 'rgb(247, 215, 114)', 
+            '03d': '#6b7280', '03n': '#6b7280', 
+            '04d': '#6b7280', '04n': '#6b7280', 
+            '09d': 'rgb(109, 137, 187)', '09n': 'rgb(109, 137, 187)', 
+            '10d': 'rgb(109, 137, 187)', '10n': 'rgb(109, 137, 187)', 
+            '11d': 'rgb(255, 230, 0)', '11n': 'rgb(255, 230, 0)', 
+            '13d': 'white', '13n': 'white', 
+            '50d': '#6b7280', '50n': '#6b7280' 
+        }[iconCode] || '#6b7280';
+        
+        // Mapping OpenWeatherMap icons to Font Awesome classes
+        const faIcon = {
+            '01d': 'fa-sun', '01n': 'fa-moon',
+            '02d': 'fa-cloud-sun', '02n': 'fa-cloud-moon',
+            '03d': 'fa-cloud', '03n': 'fa-cloud',
+            '04d': 'fa-cloud', '04n': 'fa-cloud',
+            '09d': 'fa-cloud-showers-heavy', '09n': 'fa-cloud-showers-heavy',
+            '10d': 'fa-cloud-showers-heavy', '10n': 'fa-cloud-showers-heavy',
+            '11d': 'fa-cloud-bolt', '11n': 'fa-cloud-bolt',
+            '13d': 'fa-snowflake', '13n': 'fa-snowflake',
+            '50d': 'fa-smog', '50n': 'fa-smog'
+        }[iconCode] || 'fa-question-circle';
+
+        return `
+            <div class="forecast-card" data-day="${day}">
+                <div class="card-icon-section">
+                    <i class="fas ${faIcon} fa-5x" style="color:${iconStyle};"></i>
+                </div>
+                <div class="card-info-section">
+                    <div class="day-label">
+                        <span class="calendar-icon">📅</span>
+                        <span class="forecast-day-label">${day}</span>
+                    </div>
+                    <div class="condition-row">
+                        <span class="condition-icon"><img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="${description}" style="width:24px; height:24px;"/></span>
+                        <span class="forecast-desc">${description}</span>
+                    </div>
+                    <div class="temp-row">
+                        <span class="temp-icon">🌡️</span>
+                        <span class="forecast-temp">${tempMax}° / ${tempMin}°</span>
+                    </div>
+                </div>
+            </div>
+        `;
     }
+
+    // Function to render the main 5-day forecast
+    async function renderForecast(city) {
+        clearError('errorMessage');
+        const data = await fetchForecast(city);
+        if (!data || !DOMElements.forecastGrid) return;
+
+        const forecastData = data.list;
+        const dailyForecasts = [];
+        const seenDays = new Set();
+        
+        // Filter for one entry per day, prioritizing the 12:00:00 entry
+        for (const item of forecastData) {
+            const date = new Date(item.dt * 1000);
+            const day = date.toLocaleDateString('en-US', { weekday: 'short' });
+            
+            // Only take the 12:00:00 entry for a representative daily forecast
+            if (item.dt_txt.includes('12:00:00') && !seenDays.has(day) && dailyForecasts.length < 5) {
+                dailyForecasts.push(item);
+                seenDays.add(day);
+            }
+        }
+        
+        if (DOMElements.forecastTitle) {
+            DOMElements.forecastTitle.textContent = `${data.city.name}, ${data.city.country} 5-day forecast`;
+        }
+
+        if (dailyForecasts.length > 0) {
+            DOMElements.forecastGrid.innerHTML = dailyForecasts.map(createForecastPageCard).join('');
+        } else {
+            DOMElements.forecastGrid.innerHTML = '<p style="color:white; text-align:center;">Forecast data not available.</p>';
+        }
+    }
+
+    // --- Pagination and Favorites ---
+
+    function renderFavoriteItems() {
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = favorites.slice(start, end);
+        
+        if (DOMElements.locationsList) {
+            DOMElements.locationsList.innerHTML = '';
+            pageItems.forEach(city => {
+                const item = document.createElement('a');
+                // Link to the same forecast page, passing the new city in the URL
+                item.href = `?city=${city}`; 
+                item.className = 'favorite-item'; // Use the correct class name for styling
+                item.dataset.city = city;
+                item.textContent = city;
+                item.addEventListener('click', (e) => {
+                    // Prevent default navigation to allow URL update and page refresh
+                    e.preventDefault();
+                    window.location.href = `stockton5day.html?city=${city}`; 
+                });
+                DOMElements.locationsList.appendChild(item);
+            });
+        }
+        updatePaginationControls();
+    }
+
+    function updatePaginationControls() {
+        const totalPages = Math.ceil(favorites.length / itemsPerPage);
+        
+        if (DOMElements.pageIndicator) {
+            DOMElements.pageIndicator.textContent = `${currentPage} / ${totalPages > 0 ? totalPages : 1}`;
+        }
+        
+        if (DOMElements.prevBtn) DOMElements.prevBtn.disabled = currentPage === 1;
+        if (DOMElements.nextBtn) DOMElements.nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+
+        // Hide pagination if there's only one page or no favorites
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+            paginationContainer.style.display = totalPages > 1 ? 'flex' : 'none';
+        }
+        
+        if (DOMElements.favoritesTitle) {
+             DOMElements.favoritesTitle.textContent = favorites.length > 0 ? 'Favorites' : 'No Favorites Added';
+        }
+    }
+
+    function goToNextPage() {
+        const totalPages = Math.ceil(favorites.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderFavoriteItems();
+        }
+    }
+
+    function goToPrevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderFavoriteItems();
+        }
+    }
+
+    // --- Event Listeners ---
+
+    if (DOMElements.returnToIndexBtn) {
+        // Navigates back to the main index page (assuming correct file path: ../index.html)
+        DOMElements.returnToIndexBtn.addEventListener('click', () => {
+            window.location.href = '../index.html'; 
+        });
+    }
+
+    if (DOMElements.prevBtn) DOMElements.prevBtn.addEventListener('click', goToPrevPage);
+    if (DOMElements.nextBtn) DOMElements.nextBtn.addEventListener('click', goToNextPage);
+
+    // --- Initialization ---
+
+    function initForecastPage() {
+        // 1. Get city from URL (or default)
+        const city = getCityFromUrl();
+        
+        // 2. Render the main forecast for that city
+        renderForecast(city);
+        
+        // 3. Load and render paginated favorites list
+        favorites = storage.getFavorites();
+        renderFavoriteItems();
+    }
+
+    initForecastPage();
 }

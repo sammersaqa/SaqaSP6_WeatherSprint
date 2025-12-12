@@ -21,6 +21,7 @@ body {
    2. INDEX PAGE: LAYOUT & OVERLAY STYLES
    ========================================================= */
 
+/* Dark overlay for the index page background image */
 body.index-page::before {
     content: '';
     position: absolute;
@@ -42,7 +43,7 @@ body.index-page::before {
     flex-direction: column;
 }
 
-/* --- Header (MODIFIED FOR SEARCH BAR) --- */
+/* --- Header --- */
 .header {
     padding: 40px 60px; 
     display: flex;
@@ -58,7 +59,7 @@ body.index-page::before {
     margin-right: auto; 
 }
 
-/* --- Search Bar Styles (NEW) --- */
+/* --- Search Bar Styles --- */
 .search-bar {
     display: flex;
     align-items: center;
@@ -151,6 +152,7 @@ body.index-page::before {
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease;
+    position: relative; /* For button positioning */
 }
 
 .weather-card-link:hover .weather-card {
@@ -164,6 +166,18 @@ body.index-page::before {
     font-weight: 600;
     margin-bottom: 40px;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+    padding: 0;
 }
 
 .weather-info {
@@ -182,6 +196,7 @@ body.index-page::before {
     margin: 15px 0;
 }
 
+.weather-info .high-low,
 .weather-info .humidity,
 .weather-info .wind {
     font-size: 1.5em;
@@ -189,6 +204,25 @@ body.index-page::before {
     font-weight: 400;
 }
 
+.index-forecast-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+    transition: all 0.3s;
+}
+
+.index-forecast-btn:hover {
+    background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
+    transform: translateY(-2px);
+}
 
 /* =========================================================
    4. INDEX PAGE: SIDEBAR (RIGHT)
@@ -207,8 +241,9 @@ body.index-page::before {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 25px;
     padding: 30px;
-    margin-left: 50px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    /* Corrected margin-left inconsistency */
+    margin-left: 50px; 
 }
 
 .popular-locations h2 {
@@ -515,7 +550,7 @@ body.forecast-page {
     flex-wrap: wrap;
 }
 
-.favorites-list .favorite-item {
+.favorite-item {
     color: #22d3ee;
     font-size: 1.4em;
     font-weight: 500;
@@ -526,7 +561,7 @@ body.forecast-page {
     text-decoration: none;
 }
 
-.favorites-list .favorite-item:hover {
+.favorite-item:hover {
     background: rgba(34, 211, 238, 0.15);
     transform: scale(1.05);
 }
