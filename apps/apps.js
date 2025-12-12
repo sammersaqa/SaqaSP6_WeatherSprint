@@ -1,10 +1,68 @@
 // --- Configuration ---
-const API_KEY = 'YOUR_API_KEY'; // Replace with your actual OpenWeatherMap API key
+// IMPORTANT: Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key
+const API_KEY = 'YOUR_API_KEY'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Function to check which page we are on
 const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
 const isForecastPage = window.location.pathname.includes('stockton5day.html');
+
+// =========================================================
+// 1. STORAGE UTILITIES (Replacing storage.js)
+// =========================================================
+
+const storage = {
+    // Default favorites for initial setup
+    getDefaultFavorites: () => ['Stockton', 'San Francisco', 'New York', 'Chicago', 'Los Angeles'],
+
+    // Retrieves favorites from localStorage
+    getFavorites: () => {
+        try {
+            const favoritesJSON = localStorage.getItem('weather_favorites');
+            return favoritesJSON ? JSON.parse(favoritesJSON) : storage.getDefaultFavorites();
+        } catch (e) {
+            console.error('Error loading favorites from localStorage:', e);
+            return storage.getDefaultFavorites();
+        }
+    },
+
+    // Saves the array of favorites to localStorage
+    saveFavorites: (favorites) => {
+        try {
+            localStorage.setItem('weather_favorites', JSON.stringify(favorites));
+        } catch (e) {
+            console.error('Error saving favorites to localStorage:', e);
+        }
+    },
+
+    // Checks if a city is currently a favorite
+    isFavorite: (city) => {
+        const favorites = storage.getFavorites();
+        return favorites.includes(city);
+    },
+
+    // Adds or removes a city from favorites
+    toggleFavorite: (city) => {
+        const favorites = storage.getFavorites();
+        const cityIndex = favorites.indexOf(city);
+
+        if (cityIndex > -1) {
+            // City is a favorite, remove it
+            favorites.splice(cityIndex, 1);
+        } else {
+            // City is not a favorite, add it
+            favorites.push(city);
+        }
+        storage.saveFavorites(favorites);
+    }
+};
+
+// Expose the toggleFavorite globally for the inline onclick handler in displayCurrentWeather
+window.toggleFavorite = storage.toggleFavorite; 
+
+// =========================================================
+// 2. GLOBAL HELPERS
+// =========================================================
 
 // Helper function to format wind direction
 function getWindDirection(deg) {
@@ -45,7 +103,22 @@ function clearError(elementId = 'errorMessage') {
     }
 }
 
-// --- INDEX PAGE LOGIC ---
+// API fetch for 5-day forecast (used by both pages)
+async function fetchForecast(city) {
+    try {
+        const response = await fetch(`${BASE_URL}forecast?q=${city}&appid=${API_KEY}`);
+        if (!response.ok) throw new Error('City not found or API issue.');
+        return await response.json();
+    } catch (error) {
+        console.error('Forecast fetch failed:', error);
+        displayError('Could not retrieve 5-day forecast data.', 'errorMessage');
+        return null;
+    }
+}
+
+// =========================================================
+// 3. INDEX PAGE LOGIC
+// =========================================================
 if (isIndexPage) {
     // DOM Elements for index page
     const forecastBtn = document.getElementById('forecastBtn');
@@ -57,22 +130,17 @@ if (isIndexPage) {
     const forecastSection = document.getElementById('forecastSection');
     const forecastGrid = document.getElementById('forecastGrid');
     const locationsList = document.getElementById('locationsList');
-    const errorMessage = document.getElementById('errorMessage');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
 
-    let currentWeatherData = null;
     let currentCity = 'Stockton'; // Default city
 
-    // Event Listeners
+    // --- Event Listeners ---
     if (forecastBtn) forecastBtn.addEventListener('click', handleForecastClick);
     if (backBtn) backBtn.addEventListener('click', hideForecast);
-
-    // Initial setup for existing location items
-    document.querySelectorAll('.location-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            const city = item.dataset.city;
-            loadWeather(city);
-        });
+    if (searchBtn) searchBtn.addEventListener('click', handleSearch);
+    if (searchInput) searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch(e);
     });
 
     // Helper to generate an individual forecast card for the index page
@@ -94,19 +162,6 @@ if (isIndexPage) {
         `;
     }
 
-    // API fetch for 5-day forecast
-    async function fetchForecast(city) {
-        try {
-            const response = await fetch(`${BASE_URL}forecast?q=${city}&appid=${API_KEY}`);
-            if (!response.ok) throw new Error('City not found or API issue.');
-            return await response.json();
-        } catch (error) {
-            console.error('Forecast fetch failed:', error);
-            displayError('Could not retrieve 5-day forecast data.', 'errorMessage');
-            return null;
-        }
-    }
-
     // Display 5-day forecast on the index page
     async function displayForecastOnIndex(city) {
         const data = await fetchForecast(city);
@@ -117,12 +172,12 @@ if (isIndexPage) {
         const seenDays = new Set();
         const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
 
-        // Filter for one entry per day, starting from tomorrow
+        // Filter for one entry per day, favoring the 12:00:00 entry
         for (const item of forecastData) {
             const date = new Date(item.dt * 1000);
             const day = date.toLocaleDateString('en-US', { weekday: 'short' });
             
-            // Skip today and only take the 12:00:00 entry for next 5 days
+            // Skip today and only take the 12:00:00 entry for the next 5 days
             if (day !== today && item.dt_txt.includes('12:00:00') && !seenDays.has(day)) {
                 dailyForecasts.push(item);
                 seenDays.add(day);
@@ -208,12 +263,23 @@ if (isIndexPage) {
         clearError('errorMessage');
         const data = await fetchCurrentWeather(city);
         if (data) {
-            currentWeatherData = data;
             currentCity = data.name;
             displayCurrentWeather(data);
             hideForecast();
         }
         updateFavoritesList();
+    }
+
+    // Function to handle search input
+    function handleSearch(e) {
+        e.preventDefault();
+        const city = searchInput.value.trim();
+        if (city) {
+            loadWeather(city);
+            searchInput.value = ''; // Clear search field
+        } else {
+            displayError('Please enter a city name to search.', 'errorMessage');
+        }
     }
 
     // Function to dynamically update the favorites list in the sidebar
@@ -235,22 +301,10 @@ if (isIndexPage) {
             });
         }
     }
-
-    // Global toggleFavorite function for the star icon click
-    window.toggleFavorite = (city) => {
-        storage.toggleFavorite(city);
-        const favoriteIcon = document.getElementById('favoriteIcon');
-        if (favoriteIcon) {
-            favoriteIcon.style.color = storage.isFavorite(city) ? 'yellow' : 'gray';
-        }
-        updateFavoritesList();
-    };
-
-
+    
     // Initialize index page
     async function initIndex() {
-        updateFavoritesList();
-        // Load default city or the first favorite if available
+        // Load default city (Stockton) or the first favorite if available
         const firstFavorite = storage.getFavorites()[0];
         await loadWeather(firstFavorite || 'Stockton'); 
     }
@@ -258,9 +312,9 @@ if (isIndexPage) {
     initIndex();
 }
 
-// ----------------------------------------------------------------------------------
-
-// --- FORECAST PAGE LOGIC ---
+// =========================================================
+// 4. FORECAST PAGE LOGIC
+// =========================================================
 if (isForecastPage) {
     // 1. DOM Elements (Grouped)
     const DOMElements = {
@@ -282,7 +336,8 @@ if (isForecastPage) {
     // Utility function to get city from URL
     function getCityFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        return params.get('city');
+        // Default to 'Stockton' if no city is passed in the URL
+        return params.get('city') || 'Stockton'; 
     }
 
     // Helper to generate an individual forecast card for the forecast page
@@ -293,174 +348,5 @@ if (isForecastPage) {
         const day = date.toLocaleDateString('en-US', { weekday: 'short' });
         const iconCode = data.weather[0].icon;
         const description = data.weather[0].description;
-        const iconStyle = {
-            '01d': 'orange', '01n': 'white', // Clear
-            '02d': 'rgb(247, 215, 114)', '02n': 'rgb(247, 215, 114)', // Few Clouds
-            '03d': '#6b7280', '03n': '#6b7280', // Scattered Clouds
-            '04d': '#6b7280', '04n': '#6b7280', // Broken Clouds
-            '09d': 'rgb(109, 137, 187)', '09n': 'rgb(109, 137, 187)', // Shower Rain
-            '10d': 'rgb(109, 137, 187)', '10n': 'rgb(109, 137, 187)', // Rain
-            '11d': 'rgb(255, 230, 0)', '11n': 'rgb(255, 230, 0)', // Thunderstorm
-            '13d': 'white', '13n': 'white', // Snow
-            '50d': '#6b7280', '50n': '#6b7280' // Mist
-        }[iconCode] || '#6b7280';
-        
-        // Mapping icons to Font Awesome classes (for design consistency)
-        const faIcon = {
-            '01d': 'fa-sun', '01n': 'fa-moon',
-            '02d': 'fa-cloud-sun', '02n': 'fa-cloud-moon',
-            '03d': 'fa-cloud', '03n': 'fa-cloud',
-            '04d': 'fa-cloud', '04n': 'fa-cloud',
-            '09d': 'fa-cloud-showers-heavy', '09n': 'fa-cloud-showers-heavy',
-            '10d': 'fa-cloud-showers-heavy', '10n': 'fa-cloud-showers-heavy',
-            '11d': 'fa-cloud-bolt', '11n': 'fa-cloud-bolt',
-            '13d': 'fa-snowflake', '13n': 'fa-snowflake',
-            '50d': 'fa-smog', '50n': 'fa-smog'
-        }[iconCode] || 'fa-question-circle';
-
-        return `
-            <div class="forecast-card" data-day="${day}">
-                <div class="card-icon-section">
-                    <i class="fas ${faIcon} fa-5x" style="color:${iconStyle};"></i>
-                </div>
-                <div class="card-info-section">
-                    <div class="day-label">
-                        <span class="calendar-icon">📅</span>
-                        <span class="forecast-day-label">${day}</span>
-                    </div>
-                    <div class="condition-row">
-                        <span class="condition-icon"><img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="${description}" style="width:24px; height:24px;"/></span>
-                        <span class="forecast-desc">${description}</span>
-                    </div>
-                    <div class="temp-row">
-                        <span class="temp-icon">🌡️</span>
-                        <span class="forecast-temp">${tempMax}° / ${tempMin}°</span>
-                    </div>
-                </div>
-            </div>
-        `;
     }
-
-    // Function to render the main 5-day forecast
-    async function renderForecast(city) {
-        clearError('errorMessage');
-        const data = await fetchForecast(city);
-        if (!data || !DOMElements.forecastGrid) return;
-
-        const forecastData = data.list;
-        const dailyForecasts = [];
-        const seenDays = new Set();
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
-
-        for (const item of forecastData) {
-            const date = new Date(item.dt * 1000);
-            const day = date.toLocaleDateString('en-US', { weekday: 'short' });
-            
-            // Filter for one entry per day, starting from today (or the next available day)
-            // Prioritize the entry closest to noon for a representative daily forecast
-            if (item.dt_txt.includes('12:00:00') && !seenDays.has(day) && dailyForecasts.length < 5) {
-                dailyForecasts.push(item);
-                seenDays.add(day);
-            }
-        }
-        
-        if (DOMElements.forecastTitle) {
-            DOMElements.forecastTitle.textContent = `${data.city.name}, ${data.city.country} 5-day forecast`;
-        }
-
-        if (dailyForecasts.length > 0) {
-            DOMElements.forecastGrid.innerHTML = dailyForecasts.map(createForecastPageCard).join('');
-        } else {
-            DOMElements.forecastGrid.innerHTML = '<p style="color:white; text-align:center;">Forecast data not available.</p>';
-        }
-    }
-
-    // --- Pagination and Favorites ---
-
-    function renderFavoriteItems() {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const pageItems = favorites.slice(start, end);
-        
-        if (DOMElements.locationsList) {
-            DOMElements.locationsList.innerHTML = '';
-            pageItems.forEach(city => {
-                const item = document.createElement('a');
-                item.href = `?city=${city}`;
-                item.className = 'location-item';
-                item.dataset.city = city;
-                item.innerHTML = `<div class="location-name">${city}</div>`;
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    // Load the forecast for the clicked city
-                    window.location.href = `stockton5day.html?city=${city}`; 
-                });
-                DOMElements.locationsList.appendChild(item);
-            });
-        }
-        updatePaginationControls();
-    }
-
-    function updatePaginationControls() {
-        const totalPages = Math.ceil(favorites.length / itemsPerPage);
-        
-        if (DOMElements.pageIndicator) {
-            DOMElements.pageIndicator.textContent = `${currentPage} / ${totalPages > 0 ? totalPages : 1}`;
-        }
-        
-        if (DOMElements.prevBtn) DOMElements.prevBtn.disabled = currentPage === 1;
-        if (DOMElements.nextBtn) DOMElements.nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-
-        // Hide pagination if there's only one page or no favorites
-        const paginationContainer = document.querySelector('.pagination');
-        if (paginationContainer) {
-            paginationContainer.style.display = totalPages > 1 ? 'flex' : 'none';
-        }
-    }
-
-    function goToNextPage() {
-        const totalPages = Math.ceil(favorites.length / itemsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderFavoriteItems();
-        }
-    }
-
-    function goToPrevPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            renderFavoriteItems();
-        }
-    }
-
-    // --- Event Listeners ---
-
-    if (DOMElements.returnToIndexBtn) {
-        // Navigates back to the main index page
-        DOMElements.returnToIndexBtn.addEventListener('click', () => {
-            window.location.href = '../index.html'; 
-        });
-    }
-
-    if (DOMElements.prevBtn) DOMElements.prevBtn.addEventListener('click', goToPrevPage);
-    if (DOMElements.nextBtn) DOMElements.nextBtn.addEventListener('click', goToNextPage);
-
-    // --- Initialization ---
-
-    function initForecastPage() {
-        // 1. Get city from URL (or default)
-        const city = getCityFromUrl() || 'Stockton';
-        
-        // 2. Render the main forecast
-        renderForecast(city);
-        
-        // 3. Load and render favorites list
-        favorites = storage.getFavorites();
-        if (DOMElements.favoritesTitle) {
-             DOMElements.favoritesTitle.textContent = favorites.length > 0 ? 'Favorites' : 'No Favorites Added';
-        }
-        renderFavoriteItems();
-    }
-
-    initForecastPage();
 }

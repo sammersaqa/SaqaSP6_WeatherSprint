@@ -1,5 +1,5 @@
 /* =========================================================
-   GLOBAL STYLES & RESET
+   1. GLOBAL STYLES & RESET
    ========================================================= */
 * {
     margin: 0;
@@ -10,17 +10,15 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
-    /* Ensure the path to your image is correct */
+    /* Ensure the path to your image is correct relative to the HTML file */
     background-image: url("/assets/MainBG.jpg"); 
     background-size: cover;
     background-repeat: no-repeat;
-    /* Added position: relative for correct z-index stacking */
-    position: relative; 
+    position: relative; /* For correct z-index stacking with overlay */
 }
 
-
 /* =========================================================
-   INDEX PAGE: LAYOUT & OVERLAY STYLES
+   2. INDEX PAGE: LAYOUT & OVERLAY STYLES
    ========================================================= */
 
 body.index-page::before {
@@ -44,10 +42,12 @@ body.index-page::before {
     flex-direction: column;
 }
 
-/* --- Header --- */
+/* --- Header (MODIFIED FOR SEARCH BAR) --- */
 .header {
-    text-align: center;
-    padding: 40px 20px;
+    padding: 40px 60px; 
+    display: flex;
+    justify-content: space-between; /* Pushes content to the edges */
+    align-items: center; /* Vertically aligns items */
 }
 
 .header h1 {
@@ -55,6 +55,54 @@ body.index-page::before {
     font-size: 3.5em;
     font-weight: 300;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    margin-right: auto; 
+}
+
+/* --- Search Bar Styles (NEW) --- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-input {
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 1em;
+    width: 250px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    width: 300px;
+    box-shadow: 0 4px 20px rgba(34, 211, 238, 0.5);
+}
+
+.search-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
+    transform: scale(1.05);
 }
 
 /* --- Main Content Layout --- */
@@ -65,12 +113,12 @@ body.index-page::before {
     flex: 1;
     margin-top: 350px;
     margin-left: 6rem;
-    align-items: flex-start; /* Pulls sidebar up */
+    align-items: flex-start; 
 }
 
 
 /* =========================================================
-   INDEX PAGE: CURRENT WEATHER PANEL (LEFT)
+   3. INDEX PAGE: CURRENT WEATHER PANEL (LEFT)
    ========================================================= */
 
 .current-weather-panel {
@@ -81,8 +129,14 @@ body.index-page::before {
     justify-content: center;
 }
 
+.weather-card-link {
+    text-decoration: none; /* Removes underline from the <a> tag */
+    display: block;
+    width: 100%;
+}
+
 .weather-card {
-    /* Ensure the path to your image is correct */
+    /* Ensure the path to your image is correct relative to the CSS file */
     background-image: url("/assets/Cloudy\ overcast.png");
     background-size: cover;
     border-radius: 30px;
@@ -96,6 +150,12 @@ body.index-page::before {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+.weather-card-link:hover .weather-card {
+    opacity: 0.85; /* Slight change on hover */
+    transform: translateY(-5px);
 }
 
 .location-display {
@@ -131,7 +191,7 @@ body.index-page::before {
 
 
 /* =========================================================
-   INDEX PAGE: SIDEBAR (RIGHT)
+   4. INDEX PAGE: SIDEBAR (RIGHT)
    ========================================================= */
 
 .sidebar-panel {
@@ -142,11 +202,12 @@ body.index-page::before {
     gap: 30px;
 }
 
-/* --- Popular Locations --- */
+/* --- Popular Locations (Favorites) --- */
 .popular-locations {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 25px;
     padding: 30px;
+    margin-left: 50px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
@@ -173,6 +234,7 @@ body.index-page::before {
     text-align: center;
     padding: 10px;
     border-radius: 10px;
+    text-decoration: none; /* Important for the <a> tag */
 }
 
 .location-item:hover {
@@ -180,38 +242,8 @@ body.index-page::before {
     transform: translateX(5px);
 }
 
-/* --- Search Controls (Now just the Forecast Button) --- */
-.search-controls {
-    display: flex;
-    gap: 15px;
-}
-
-/* REMOVED: .search-input rules */
-
-.forecast-btn {
-    padding: 18px 35px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
-    color: white;
-    font-size: 1em;
-    font-weight: 700;
-    cursor: pointer;
-    /* Added to compensate for search input removal */
-    width: 100%; 
-    transition: all 0.3s;
-    box-shadow: 0 5px 20px rgba(34, 211, 238, 0.4);
-    white-space: nowrap;
-}
-
-.forecast-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(34, 211, 238, 0.6);
-}
-
-
 /* =========================================================
-   INDEX PAGE: 5-DAY FORECAST SECTION (Expanded View)
+   5. INDEX PAGE: 5-DAY FORECAST SECTION (Expanded View)
    ========================================================= */
 
 .forecast-section {
@@ -220,6 +252,7 @@ body.index-page::before {
     backdrop-filter: blur(10px);
     margin: 0 60px 60px 60px;
     border-radius: 20px;
+    width: 100%; /* Ensure it spans the width */
 }
 
 .back-btn {
@@ -273,9 +306,9 @@ body.index-page::before {
     margin-bottom: 15px;
 }
 
-.forecast-icon {
-    font-size: 3em;
-    margin: 15px 0;
+.forecast-icon img {
+    width: 60px; /* Adjust icon size for mini-card */
+    height: 60px;
 }
 
 .forecast-temp {
@@ -302,10 +335,12 @@ body.index-page::before {
 
 
 /* =========================================================
-   FORECAST PAGE STYLES (stockton5day.html)
+   6. FORECAST PAGE STYLES (stockton5day.html)
    ========================================================= */
 
 body.forecast-page {
+    /* Overrides MainBG.jpg with a solid gradient for the forecast view */
+    background-image: none; 
     background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 100%);
     color: white;
 }
@@ -319,11 +354,10 @@ body.forecast-page {
 /* --- Forecast Header (Centered Title) --- */
 .forecast-header {
     display: flex;
-    /* Centers items along the main axis (horizontally) */
     justify-content: center; 
     align-items: center;
     margin-bottom: 50px;
-    position: relative; /* Needed for positioning the button */
+    position: relative; 
     padding: 0 40px;
 }
 
@@ -331,7 +365,6 @@ body.forecast-page {
     font-size: 2em;
     font-weight: 300;
     color: white;
-    /* When centered, this H1 takes center stage */
 }
 
 .header-right {
@@ -343,9 +376,25 @@ body.forecast-page {
     align-items: center;
 }
 
-/* REMOVED: .header-right .search-input rules */
-/* .header-right .forecast-btn is shared with the Index Page styles */
+.forecast-btn {
+    padding: 18px 35px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    color: white;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    width: auto; 
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(34, 211, 238, 0.4);
+    white-space: nowrap;
+}
 
+.forecast-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(34, 211, 238, 0.6);
+}
 
 /* --- Main Forecast Section --- */
 .forecast-main {
@@ -424,8 +473,9 @@ body.forecast-page {
     margin: 8px 0;
 }
 
-.condition-icon {
-    font-size: 1em;
+.condition-icon img {
+    width: 24px;
+    height: 24px;
 }
 
 .temp-row {
@@ -441,7 +491,7 @@ body.forecast-page {
     font-size: 1.1em;
 }
 
-/* --- Favorites Section --- */
+/* --- Favorites Section (Forecast Page) --- */
 .favorites-section {
     max-width: 1400px;
     margin: 0 auto;
@@ -473,6 +523,7 @@ body.forecast-page {
     padding: 10px 20px;
     border-radius: 8px;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
 .favorites-list .favorite-item:hover {
@@ -519,26 +570,35 @@ body.forecast-page {
 
 
 /* =========================================================
-   RESPONSIVE DESIGN: INDEX PAGE
+   7. RESPONSIVE DESIGN: INDEX PAGE
    ========================================================= */
 
 @media (max-width: 1200px) {
+    .header {
+        padding: 30px 40px;
+    }
+    
     .content-wrapper {
         flex-direction: column;
         align-items: center;
         gap: 40px; 
+        padding: 0 40px 60px 40px; /* Adjust padding for smaller screens */
+        margin-top: 100px; /* Reduced top margin on smaller screens */
+        margin-left: 0;
     }
     
+    .search-input {
+        width: 200px;
+    }
+
     .current-weather-panel {
-        /* Restores full flexibility on smaller screens */
         width: 100%; 
         max-width: 600px;
-        /* Adjust for centering within the content wrapper */
         margin-left: 0; 
     }
 
     .weather-card {
-        margin-left: 0; /* Center card inside panel */
+        margin-left: 0; 
     }
 
     .sidebar-panel {
@@ -549,12 +609,29 @@ body.forecast-page {
 }
 
 @media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
     .header h1 {
         font-size: 2.5em;
+        margin-right: 0;
+    }
+    
+    .search-bar {
+        width: 100%; /* Search bar takes full width */
+    }
+    
+    .search-input {
+        flex-grow: 1;
+        width: auto;
     }
 
     .weather-card {
         padding: 40px 30px;
+        height: 500px;
     }
 
     .location-display {
@@ -573,7 +650,7 @@ body.forecast-page {
 
 
 /* =========================================================
-   RESPONSIVE DESIGN: FORECAST PAGE
+   8. RESPONSIVE DESIGN: FORECAST PAGE
    ========================================================= */
 
 @media (max-width: 1200px) {
@@ -588,18 +665,22 @@ body.forecast-page {
     }
 
     .forecast-header {
-        /* Reverting back to stretch alignment when stacked */
         flex-direction: column;
         align-items: stretch;
+        padding: 0;
     }
     
     .header-right {
-        /* Puts the button below the title, aligned left */
         position: static;
         right: auto;
         flex-direction: column;
         align-items: flex-start;
         margin-top: 15px;
+    }
+    
+    .forecast-btn {
+        width: 100%;
+        padding: 15px;
     }
 
     .forecast-main .forecast-title {
