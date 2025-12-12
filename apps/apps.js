@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 // --- Configuration ---
 // IMPORTANT: Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key
 const API_KEY = 'YOUR_API_KEY'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
+=======
+async function loadFiveDayForecast(city) {
+    const apiKey = "e49c5df5ed882ea60e4603c9123e0d04";
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`;
+>>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
 
-// Function to check which page we are on
-const isIndexPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
-const isForecastPage = window.location.pathname.includes('stockton5day.html');
+    const response = await fetch(url);
+    const data = await response.json();
 
+<<<<<<< HEAD
 // =========================================================
 // 1. STORAGE UTILITIES (Replacing storage.js)
 // =========================================================
@@ -70,12 +76,16 @@ function getWindDirection(deg) {
     const index = Math.round(deg / 45) % 8;
     return directions[index];
 }
+=======
+    // Group forecasts by day
+    const daily = {};
+>>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
 
-// Helper function to convert Kelvin to Fahrenheit
-function kelvinToFahrenheit(k) {
-    return Math.round((k - 273.15) * 9/5 + 32);
-}
+    data.list.forEach(entry => {
+        const date = new Date(entry.dt * 1000);
+        const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
 
+<<<<<<< HEAD
 // Helper function to display errors
 function displayError(message, elementId = 'errorMessage') {
     const errorElement = document.getElementById(elementId);
@@ -141,17 +151,25 @@ if (isIndexPage) {
     if (searchBtn) searchBtn.addEventListener('click', handleSearch);
     if (searchInput) searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSearch(e);
+=======
+        if (!daily[dayName]) {
+            daily[dayName] = entry;
+        }
+>>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
     });
 
-    // Helper to generate an individual forecast card for the index page
-    function createIndexForecastCard(data) {
-        const tempMax = kelvinToFahrenheit(data.main.temp_max);
-        const tempMin = kelvinToFahrenheit(data.main.temp_min);
-        const date = new Date(data.dt * 1000);
-        const day = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const iconCode = data.weather[0].icon;
-        const description = data.weather[0].description;
+    // Only take the first 5 days
+    const days = Object.keys(daily).slice(0, 5);
+
+    // ✅ Only the icons YOU have
+    const iconMap = {
+        "Clear": "../assets/sunny.jpg",
+        "Clouds": "../assets/cloudy-overcast.jpg",
+        "Rain": "../assets/sunny.jpg",
+        "Drizzle": "../assets/sunny.jpg",
+        "Thunderstorm": "../assets/sunny.jpg",
         
+<<<<<<< HEAD
         return `
             <div class="forecast-card">
                 <div class="forecast-day">${day}</div>
@@ -308,10 +326,47 @@ if (isIndexPage) {
         const firstFavorite = storage.getFavorites()[0];
         await loadWeather(firstFavorite || 'Stockton'); 
     }
+=======
+    };
 
-    initIndex();
+    const container = document.getElementById("forecast-cards");
+    container.innerHTML = "";
+
+    days.forEach(day => {
+        const entry = daily[day];
+        const desc = entry.weather[0].description;
+        const main = entry.weather[0].main;
+>>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
+
+        // ✅ Base icon
+        let iconFile = iconMap[main] || "overcast.png";
+
+        // ✅ Special case: Partly Cloudy
+        if (desc.toLowerCase().includes("partly")) {
+            iconFile = "partlycloudy.png";
+        }
+
+        const high = Math.round(entry.main.temp_max);
+        const low = Math.round(entry.main.temp_min);
+
+        const card = document.createElement("div");
+        card.className = "forecast-card";
+
+        card.innerHTML = `
+            <img src="/assets/${iconFile}" class="forecast-icon">
+
+            <div class="forecast-bottom">
+                <h3>${day}</h3>
+                <p>${desc.charAt(0).toUpperCase() + desc.slice(1)}</p>
+                <p>🌡️ ${high}° / ${low}°</p>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
 }
 
+<<<<<<< HEAD
 // =========================================================
 // 4. FORECAST PAGE LOGIC
 // =========================================================
@@ -349,4 +404,9 @@ if (isForecastPage) {
         const iconCode = data.weather[0].icon;
         const description = data.weather[0].description;
     }
+=======
+// ✅ Auto-run when on the 5-day page
+if (window.location.pathname.includes("stockton5day.html")) {
+    loadFiveDayForecast("Stockton");
+>>>>>>> d1c1a6578b95eed04cb0ed58efc36c36ef0d7dbc
 }
