@@ -121,7 +121,6 @@ async function fetchForecast(city) {
 // =========================================================
 if (isIndexPage) {
     // DOM Elements for index page
-    const forecastBtn = document.getElementById('forecastBtn');
     const backBtn = document.getElementById('backBtn');
     const weatherCard = document.getElementById('weatherCard');
     const locationDisplay = document.getElementById('locationDisplay');
@@ -136,7 +135,6 @@ if (isIndexPage) {
     let currentCity = 'Stockton'; // Default city
 
     // --- Event Listeners ---
-    if (forecastBtn) forecastBtn.addEventListener('click', handleForecastClick);
     if (backBtn) backBtn.addEventListener('click', hideForecast);
     if (searchBtn) searchBtn.addEventListener('click', handleSearch);
     if (searchInput) searchInput.addEventListener('keypress', (e) => {
@@ -238,9 +236,7 @@ if (isIndexPage) {
 
         if (locationDisplay) locationDisplay.innerHTML = `
             ${data.name}, ${data.sys.country}
-            <button class="favorite-btn" onclick="toggleFavorite('${data.name}')">
-                <i class="fas fa-star" id="favoriteIcon" style="color: ${isFav ? 'yellow' : 'gray'};"></i>
-            </button>
+            <button class="favorite-btn" onclick="toggleFavorite('${data.name}')"></button>
         `;
 
         if (weatherInfo) weatherInfo.innerHTML = `
